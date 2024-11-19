@@ -28,35 +28,33 @@ public class FirstController {
     public ResponseEntity<Book> getBookByIsbn(@PathVariable String isbn) {
         Optional<Book> optionalBook = bookRepository.findByIsbn(isbn);
 
-        if (optionalBook.isPresent()){
+        if (optionalBook.isPresent()) {
             return new ResponseEntity<>(optionalBook.get(), HttpStatus.OK);
         }
-
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping
-    public ResponseEntity<Book> createBook(@RequestBody Book book){
+    public ResponseEntity<Book> createBook(@RequestBody Book book) {
         Optional<Book> existingBook = this.bookRepository.findByIsbn(book.getIsbn());
-            if (existingBook.isPresent()){
-                return ResponseEntity.badRequest().build();
-            }
-            Book savedBook = bookRepository.save(book);
-            return ResponseEntity.ok(savedBook);
+        if (existingBook.isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+        Book savedBook = bookRepository.save(book);
+        return ResponseEntity.ok(savedBook);
     }
 
-    @DeleteMapping("/isbn/{isbn}")
-    public ResponseEntity<Void> deleteBook(@PathVariable String isbn) {
-        Optional<Book> book = null;
+    @DeleteMapping("/{isbn}")
+    public void deleteIsbn(@PathVariable String isbn) {
+        Optional<Book> book = bookRepository.findByIsbn(isbn);
         if (book.isPresent()) {
-            book = bookRepository.findByIsbn(isbn);
-            return ResponseEntity.ok().build();
-        }else {
-            return ResponseEntity.notFound().build();
+            bookRepository.deleteIsbn(isbn);
+            new ResponseEntity<>(HttpStatus.OK);
         }
+            new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
     }
 }
-//UPDATE => Modiifcar un libro por su isbn(Put)
 
 
 
